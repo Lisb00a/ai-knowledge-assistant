@@ -1,0 +1,9 @@
+O Random Forest utiliza várias árvores de decisão para realizar previsões.
+
+O MAE mede o erro absoluto médio entre os valores reais e previstos.
+
+O GitHub Actions permite executar testes automatizados sempre que alterações são enviadas ao repositório.
+
+O RAG combina recuperação de documentos com modelos de linguagem para produzir respostas fundamentadas.
+
+Os embeddings transformam textos em vetores numéricos que representam características semânticas.
