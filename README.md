@@ -54,3 +54,57 @@ O projeto utiliza documentos fictícios e não contém dados confidenciais de cl
 ### Limitações
 
 O filtro de similaridade não garante que todos os documentos recuperados sejam relevantes. O modelo de linguagem também pode produzir respostas incorretas. Futuras melhorias incluem avaliação sistemática da recuperação, tratamento de falhas da API e testes adicionais de qualidade das respostas.
+
+## API REST com FastAPI
+
+O projeto disponibiliza uma API REST que permite consultar o assistente de inteligência artificial utilizando RAG e Gemini.
+
+### Endpoints
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/health` | Verifica se a API está funcionando |
+| POST | `/ask` | Recebe uma pergunta e retorna a resposta com as fontes |
+
+### Executar a API
+
+```powershell
+python -m uvicorn src.api:app --host 127.0.0.1 --port 8000
+```
+
+A documentação interativa estará disponível em:
+
+`http://127.0.0.1:8000/docs`
+
+### Exemplo de requisição
+
+```json
+{
+  "pergunta": "Como funciona o algoritmo Random Forest?"
+}
+```
+
+### Exemplo de resposta
+
+```json
+{
+  "pergunta": "Como funciona o algoritmo Random Forest?",
+  "resposta": "Random Forest utiliza várias árvores de decisão para realizar previsões (Fonte 1).",
+  "fontes": [
+    {
+      "documento": "O Random Forest utiliza várias árvores de decisão para realizar previsões.",
+      "similaridade": 0.7428
+    }
+  ]
+}
+```
+
+### Testes
+
+A API possui testes automatizados com `pytest` e `TestClient`, incluindo validação de perguntas, respostas simuladas e tratamento de erros.
+
+```powershell
+python -m pytest -v
+```
+
+Os testes automatizados não precisam realizar chamadas reais à API do Gemini.
