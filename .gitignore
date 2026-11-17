@@ -1,3 +1,11 @@
 .venv/
 __pycache__/
 .pytest_cache/
+
+# Chaves de API e variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Índice vetorial gerado localmente
+data/vector_index/
