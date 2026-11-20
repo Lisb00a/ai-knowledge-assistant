@@ -1,5 +1,6 @@
 
 import os
+import re
 from functools import lru_cache
 
 from dotenv import load_dotenv
@@ -24,6 +25,30 @@ def carregar_modelo():
     """
     print("Carregando modelo de embeddings...")
     return SentenceTransformer(MODEL_NAME)
+
+class CitacaoInvalidaError(Exception):
+    """Erro quando o Gemini cita uma fonte inexistente."""
+    pass
+
+def validar_citacoes(resposta: str, quantidade_fontes: int) -> None:
+    """
+    Verifica se as referências numeradas na resposta
+    correspondem às fontes enviadas ao Gemini.
+    """
+    referencias = re.findall(
+        r"\bFonte\s+(\d+)\b",
+        resposta,
+        flags=re.IGNORECASE
+    )
+
+    for referencia in referencias:
+        numero = int(referencia)
+
+        if numero < 1 or numero > quantidade_fontes:
+            raise CitacaoInvalidaError(
+            f"Referência inválida: Fonte {numero}"
+)
+
 
 
 def responder_pergunta(pergunta, top_k=3):
@@ -118,7 +143,10 @@ PERGUNTA:
         raise RuntimeError(
             "O Gemini não retornou uma resposta válida."
         )
-
+    validar_citacoes(
+        resposta.text,
+        len(documentos)
+    )
     # 11. Retorno estruturado
     return {
         "pergunta": pergunta,

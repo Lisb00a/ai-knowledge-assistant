@@ -15,7 +15,9 @@ def limpar_cache_modelo():
     interfira entre os testes.
     """
     rag.carregar_modelo.cache_clear()
+
     yield
+
     rag.carregar_modelo.cache_clear()
 
 
@@ -47,9 +49,10 @@ class ClienteFalso:
 
 def preparar_ambiente(monkeypatch, documentos):
     """
-    Simula a chave da API, o modelo de embeddings
-    e a busca vetorial sem acessar serviços reais.
+    Simula a chave de API, o modelo de embeddings
+    e a busca vetorial, sem acessar serviços reais.
     """
+
     monkeypatch.setenv(
         "GEMINI_API_KEY",
         "chave_ficticia"
@@ -164,7 +167,11 @@ def test_filtro_remove_documentos_irrelevantes(monkeypatch):
     )
 
     assert len(resultado["fontes"]) == 1
-    assert resultado["fontes"][0]["documento"] == "Random Forest"
+
+    assert (
+        resultado["fontes"][0]["documento"]
+        == "Random Forest"
+    )
 
 
 # ==========================================
@@ -193,6 +200,7 @@ def test_gemini_recebe_contexto_correto(monkeypatch):
                 "modelo": model,
                 "prompt": contents
             })
+
             return RespostaFalsa()
 
     class ClienteCaptura:
@@ -226,6 +234,7 @@ def test_gemini_recebe_contexto_correto(monkeypatch):
     )
 
     assert "Como funciona Random Forest?" in prompt
+
     assert len(resultado["fontes"]) == 1
 
 
@@ -305,3 +314,44 @@ def test_gemini_timeout_configurado(monkeypatch):
 
     assert configuracoes[0] is not None
     assert configuracoes[0].timeout == 30000
+
+
+# ==========================================
+# TESTE 08 - CITAÇÃO VÁLIDA
+# ==========================================
+
+def test_citacao_valida():
+    rag.validar_citacoes(
+        "Random Forest utiliza árvores. (Fonte 1)",
+        quantidade_fontes=1
+    )
+
+
+# ==========================================
+# TESTE 09 - CITAÇÃO INEXISTENTE
+# ==========================================
+
+def test_citacao_invalida():
+    with pytest.raises(
+        rag.CitacaoInvalidaError,
+        match="Referência inválida: Fonte 8"
+    ):
+        rag.validar_citacoes(
+            "Random Forest utiliza árvores. (Fonte 8)",
+            quantidade_fontes=2
+        )
+
+
+# ==========================================
+# TESTE 10 - CITAÇÃO COM NÚMERO ZERO
+# ==========================================
+
+def test_citacao_zero():
+    with pytest.raises(
+        rag.CitacaoInvalidaError,
+        match="Referência inválida: Fonte 0"
+    ):
+        rag.validar_citacoes(
+            "Informação encontrada. (Fonte 0)",
+            quantidade_fontes=3
+        )
