@@ -80,3 +80,11 @@ def test_erro_interno(monkeypatch):
     )
 
     assert resposta.status_code == 500
+
+def test_pergunta_muito_longa():
+    resposta = client.post(
+        "/ask",
+        json={"pergunta": "A" * 2001}
+    )
+
+    assert resposta.status_code == 422

@@ -4,6 +4,7 @@ from functools import lru_cache
 
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 from sentence_transformers import SentenceTransformer
 
 from src.semantic_search import MODEL_NAME
@@ -100,7 +101,12 @@ PERGUNTA:
 """
 
     # 9. Integração com Google Gemini
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(
+            timeout=30000
+        )
+    )
 
     resposta = client.models.generate_content(
         model=GEMINI_MODEL,

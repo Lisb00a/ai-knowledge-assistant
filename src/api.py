@@ -27,7 +27,8 @@ class PerguntaRequest(BaseModel):
     pergunta: str = Field(
         ...,
         min_length=1,
-        description="Pergunta enviada ao assistente"
+        max_length=2000,
+        description="Pergunta enviada ao assistente (máximo de 2000 caracteres)"
     )
 
 
